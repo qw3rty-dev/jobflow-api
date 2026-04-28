@@ -1,37 +1,43 @@
-# Job Tracker API 
+# Job Tracker API
 
-A backend system that fetches jobs, stores them, filters relevant ones, and send alerts via Telegram.
+A FastAPI-based backend system that automatically fetches remote jobs, filters relevant ones, stores them locally, and sends real-time alerts via Telegram.
 
 ---
 
-## What it does
+## Overview
 
-- Fetches jobs from external API
-- Stores them in a SQLite database 
-- Background job fetching (runs continuously)
-- Avoid duplicates using job links
-- Filters jobs based on keywords
-- Send alerts on Telegram when new jobs are found
+This project automates the job discovery process by integrating scraping, filtering, storage, and notification into a single pipeline.
+
+### Key Features
+
+- Fetches jobs from RemoteOK API
+- Stores jobs in SQLite database
+- Avoids duplicates using unique job links
+- Filters jobs based on predefined keywords
+- Sends Telegram alerts for relevant jobs
+- Runs automatically in the background every 10 minutes
+- Manual scrape trigger via API
 
 ---
 
 ## How It Works
 
-1. The scraper fetches jobs from an external API
-2. New jobs are identified by comparing with stored data
-3. Jobs are filtered based on keywords
-4. Relevant jobs are sent as Telegram alerts
-5. Background task runs this process at regular intervals
+1. The system fetches jobs from the RemoteOK API
+2. Existing job links are checked to prevent duplicates
+3. Jobs are filtered using hardcoded keywords
+4. Filtered jobs are stored in the database
+5. New relevant jobs are sent as a single Telegram message
+6. This process runs automatically every 10 minutes using a background thread
 
 ---
 
 ## Tech Stack
 
-- FastAPI
-- SQLite (sqlite3)
-- BeautifulSoup
-- Requests
-- Python-dotenv
+- **FastAPI** – API framework
+- **SQLite (sqlite3)** – Lightweight database
+- **Requests** – API calls
+- **Threading** – Background job execution
+- **Python-dotenv** – Environment variable management
 
 ---
 
@@ -40,25 +46,24 @@ A backend system that fetches jobs, stores them, filters relevant ones, and send
 ```
 job-tracker-api/
 │
-├── main.py
-├── db.py
-├── scraper.py
+├── main.py              # App entry + background thread
+├── database.py          # DB connection + table initialization
+├── scraper.py           # Fetch, filter, and process jobs
 │
 ├── routes/
-│     └── jobs.py
+│     └── jobs.py        # All job-related endpoints
 │
 ├── services/
-│     └── alerts.py
+│     └── alerts.py      # Telegram alert logic
 │
 ├── .env.example
-├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 **1. Clone the repository**
 ```bash
@@ -71,9 +76,9 @@ cd job-tracker-api
 pip install -r requirements.txt
 ```
 
-**3. Create environment variables**
+**3. Setup environment variables**
 
-Create a `.env` file in the root directory:
+Create a `.env` file:
 ```
 BOT_TOKEN=your_telegram_bot_token
 CHAT_ID=your_telegram_chat_id
@@ -88,36 +93,101 @@ uvicorn main:app --reload
 
 ## API Endpoints
 
-Some useful endpoints:
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/jobs` | Fetch stored jobs |
-| `POST` | `/jobs/scrape` | Manually trigger scraping |
+| `POST` | `/jobs/` | Create a job manually |
+| `GET` | `/jobs/` | Get all stored jobs |
+| `POST` | `/jobs/scrape` | Trigger manual scraping |
 | `GET` | `/jobs/stats` | Get job statistics |
+| `GET` | `/jobs/{job_id}` | Get job by ID |
+| `DELETE` | `/jobs/{job_id}` | Delete job |
+| `PUT` | `/jobs/{job_id}` | Mark job as applied |
 
-Full API docs are available at `/docs`.
+ Interactive docs available at: `/docs`
 
 ---
 
+## Example Response
 
+```json
+{
+  "id": 1,
+  "title": "Backend Developer",
+  "company": "Example Inc",
+  "location": "Remote",
+  "link": "https://remoteOK.com/remote-jobs/job/123",
+  "applied": false
+}
+```
+
+---
+
+## Stats Endpoint
+
+`GET /jobs/stats` returns:
+
+```json
+{
+  "total_jobs": 50,
+  "applied": 10,
+  "pending": 40
+}
+```
+
+---
+
+## Telegram Alerts
+
+- Sends one combined message per scrape
+- Includes only filtered jobs
+- Triggered only when new relevant jobs are found
+
+Format:
+```
+Title at Company
+Location: XYZ
+https://...
+```
+
+---
+
+## Database Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Integer | Primary key (auto increment) |
+| `title` | Text | Job title |
+| `company` | Text | Company name |
+| `location` | Text | Job location |
+| `link` | Text | Unique job URL |
+| `applied` | Boolean | Application status |
+
+---
+
+## Background Processing
+
+- Runs using a threaded loop
+- Executes every 10 minutes
+- Automatically starts with the application
+- Can also be triggered manually via API
 
 ---
 
 ## Notes
 
-- `.env` is not included for security reasons
-- Database (`jobs.db`) is created automatically on first run
-- Make sure to start your Telegram bot before using alerts
+- `.env` file is not included for security reasons
+- Database is created automatically on first run
+- Ensure your Telegram bot is active before running
 
 ---
 
 ## Future Improvements
 
-- Better filtering logic
-- User-specific preferences
+- User-specific job preferences
+- Authentication system
 - Web dashboard (frontend)
-- Support for multiple users
+- Multi-user support
+- Advanced filtering logic
 
 ---
 
