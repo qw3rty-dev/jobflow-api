@@ -108,7 +108,7 @@ uvicorn main:app --reload
 ---
 
 ## Swagger UI
-![Swagger UI](assets/swagger.png
+![Swagger UI](assets/swagger.png)
 
 ## Example Response
 
