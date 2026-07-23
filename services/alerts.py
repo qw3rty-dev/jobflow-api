@@ -1,22 +1,23 @@
-import requests
-from dotenv import load_dotenv
-import os
+# import os
+# from dotenv import load_dotenv
+
+# import requests
 
 
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+# load_dotenv()
+# BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-CHAT_ID = os.getenv("CHAT_ID")
+# CHAT_ID = os.getenv("CHAT_ID")
 
-def send_telegram_alert(new_jobs):
+# def send_telegram_alert(new_jobs):
     
-    message= "New jobs:\n\n"
+#     message= "New jobs:\n\n"
     
 
-    for i,job in enumerate(new_jobs[:20],1):
-        message+= f"{i}. {job['title']} at {job['company']}\nLocation: {job['location']}\n{job['link']}\n\n"
-    url= f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+#     for i,job in enumerate(new_jobs[:20],1):
+#         message+= f"{i}. {job.title} at {job.company}\nLocation: {job.location}\n{job.link}\n\n"
+#     url= f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    requests.post(url,data={"chat_id": CHAT_ID,
-                                "text":message})
+#     requests.post(url,data={"chat_id": CHAT_ID,
+#                                 "text":message})
     

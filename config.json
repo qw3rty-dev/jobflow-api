@@ -1,0 +1,19 @@
+{
+    "adzuna_keywords": [
+                        "backend",
+                        "frontend",
+                        "full stack",
+                        "mobile",
+                        "web",
+                        "devops",
+                        "data",
+                        "machine learning",
+                        "intern",
+                        "junior"
+                        ],
+
+    "countries": ["gb","us","in","ca","au","de"],
+    "results_per_page": 20,
+    "notification_interval": 7200,
+    "scraper_interval": 600
+}
