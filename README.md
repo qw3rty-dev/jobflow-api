@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-Backend API for automated job discovery, tracking, email notifications, PDF/CSV exports and personalized recommendations.
+Backend API for automated job discovery, tracking, email notifications and PDF/CSV exports.
 </p>
 
 <p align="center">
@@ -189,7 +189,7 @@ Background workers operate independently from the API and continuously:
 
 ---
 
-# 📂 Project Structure
+# Project Structure
 
 ```
 .
@@ -210,7 +210,7 @@ Background workers operate independently from the API and continuously:
 
 ---
 
-# 🚀 Installation
+# Installation
 
 Clone the repository
 
@@ -252,7 +252,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# 🔑 Environment Variables
+# Environment Variables
 
 Create a `.env` file using `.env.example`.
 
@@ -267,22 +267,15 @@ Required variables:
 
 ---
 
-# 🔮 Future Improvements
+# Future Improvements
 
-- Docker Support
-- Redis Caching
-- Background Queue (Celery/RQ)
-- OAuth Authentication
-- AI-powered Job Recommendations
-- Job Analytics Dashboard
+- Integrate additional job sources (Wellfound, Greenhouse, Lever)
+- AI-powered job recommendations based on saved jobs and user preferences
+- Docker support for simplified deployment
+- Redis caching for frequently accessed queries
+- Background task queue using Celery or RQ
+- OAuth login with Google and GitHub
+- Job analytics dashboard with application insights
+- Automated resume matching and job scoring
 
 ---
-
-# 👨‍💻 Author
-
-**qw3rty-dev**
-
-Backend Developer
-
-GitHub:
-https://github.com/qw3rty-dev
