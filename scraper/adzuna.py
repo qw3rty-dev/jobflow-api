@@ -28,7 +28,7 @@ async def fetch_page(client,url,params,country,keyword):
     async with semaphore:
         response = await client.get(url,params=params)
         if response.status_code ==429:
-            print(f"429: {country=} {keyword=}")
+            # print(f"429: {country=} {keyword=}")
             return None
     return response.json()
 

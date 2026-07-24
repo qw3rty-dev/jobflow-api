@@ -33,7 +33,7 @@ app.include_router(user.router)
 app.include_router(admin.router)
 
 
-@app.get("/",response_model=HomeResponse)
+@app.get("/",response_model=HomeResponse,include_in_schema=False)
 def home():
     return HomeResponse(
         name= "JobFlow API",

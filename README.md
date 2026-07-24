@@ -1,196 +1,288 @@
-# Job Tracker API
+#  JobFlow API
 
-A FastAPI-based backend system that automatically fetches remote jobs, filters relevant ones, stores them locally, and sends real-time alerts via Telegram.
+<p align="center">
+  <img src="assets/architecture.png" alt="JobFlow Architecture" width="100%">
+</p>
 
----
+<p align="center">
+Backend API for automated job discovery, tracking, email notifications, PDF/CSV exports and personalized recommendations.
+</p>
 
-## Overview
+<p align="center">
 
-This project automates the job discovery process by integrating scraping, filtering, storage, and notification into a single pipeline.
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green?style=for-the-badge&logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge&logo=postgresql)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-red?style=for-the-badge)
+![Alembic](https://img.shields.io/badge/Alembic-Migrations-orange?style=for-the-badge)
 
-### Key Features
-
-- Fetches jobs from RemoteOK API
-- Stores jobs in SQLite database
-- Avoids duplicates using unique job links
-- Filters jobs based on predefined keywords
-- Sends Telegram alerts for relevant jobs
-- Runs automatically in the background every 10 minutes
-- Manual scrape trigger via API
-
----
-
-## How It Works
-
-1. The system fetches jobs from the RemoteOK API
-2. Existing job links are checked to prevent duplicates
-3. Jobs are filtered using hardcoded keywords
-4. Filtered jobs are stored in the database
-5. New relevant jobs are sent as a single Telegram message
-6. This process runs automatically every 10 minutes using a background thread
+</p>
 
 ---
 
-## Tech Stack
+# Overview
 
-- **FastAPI** – API framework
-- **SQLite (sqlite3)** – Lightweight database
-- **Requests** – API calls
-- **Threading** – Background job execution
-- **Python-dotenv** – Environment variable management
+JobFlow API is a production-inspired backend application built with **FastAPI** that automates the job search workflow.
+
+Instead of manually searching across multiple websites every day, JobFlow periodically collects jobs from different sources, stores them in PostgreSQL, allows users to manage their applications, and sends email notifications whenever new jobs match their interests.
+
+The project demonstrates real backend engineering concepts including authentication, background workers, database migrations, service-layer architecture, email automation and reporting.
 
 ---
 
-## Project Structure
+# Features
+
+## Authentication
+
+- JWT Authentication
+- Secure Password Hashing
+- Email Verification
+- Password Reset via Email
+- Welcome Emails
+- Protected Routes
+
+---
+
+## Job Discovery
+
+- Multi-source Job Scraping
+- Search Jobs
+- Filter by Company, Location and Source
+- Sorting
+- Pagination
+
+---
+
+## User Features
+
+- Save Jobs
+- Track Application Status
+- Personal Dashboard
+- Manage Keywords
+- Notification Preferences
+- Export Saved Jobs to PDF
+- Export Saved Jobs to CSV
+
+---
+
+## Email Services
+
+- Welcome Email
+- Email Verification
+- Password Reset Email
+- Job Notification Email
+
+---
+
+## Background Workers
+
+- Automated Job Scraper
+- Notification Worker
+- Cleanup Worker
+
+---
+
+## Database
+
+- PostgreSQL
+- SQLAlchemy ORM
+- Alembic Migrations
+- Relationship Mapping
+
+---
+
+# Architecture
+
+The project follows a layered architecture.
 
 ```
-job-tracker-api/
-│
-├── main.py              # App entry + background thread
-├── database.py          # DB connection + table initialization
-├── scraper.py           # Fetch, filter, and process jobs
-│
+Client
+
+↓
+
+FastAPI Routes
+
+↓
+
+Service Layer
+
+↓
+
+SQLAlchemy ORM
+
+↓
+
+PostgreSQL
+```
+
+Background workers operate independently from the API and continuously:
+
+- Scrape new jobs
+- Notify users
+- Cleanup expired data
+
+---
+
+# Tech Stack
+
+| Layer | Technology |
+|---------|------------|
+| Language | Python |
+| Framework | FastAPI |
+| Database | PostgreSQL |
+| ORM | SQLAlchemy |
+| Migrations | Alembic |
+| Authentication | JWT |
+| Email | Resend |
+| Web Scraping | Requests + BeautifulSoup |
+| Reports | ReportLab |
+
+---
+
+# Screenshots
+
+## Swagger UI
+
+![Swagger](assets/swagger.png)
+
+---
+
+## Authentication
+
+![Authentication](assets/authentication.png)
+
+---
+
+## Jobs API
+
+![Jobs](assets/jobs.png)
+
+---
+
+## User Endpoints
+
+![Users](assets/users.png)
+
+---
+
+## Admin Endpoints
+
+![Admin](assets/admin.png)
+
+---
+
+## Email Notification
+
+![Notification](assets/notification.png)
+
+---
+
+## PDF Export
+
+![PDF](assets/pdf.png)
+
+---
+
+## CSV Export
+
+![CSV](assets/csv.png)
+
+---
+
+# 📂 Project Structure
+
+```
+.
+├── alembic/
+├── assets/
 ├── routes/
-│     └── jobs.py        # All job-related endpoints
-│
+├── scraper/
+├── security/
 ├── services/
-│     └── alerts.py      # Telegram alert logic
-│
-├── .env.example
-├── requirements.txt
-└── README.md
+├── main.py
+├── database.py
+├── models.py
+├── schemas.py
+├── enums.py
+├── config.json
+└── requirements.txt
 ```
 
 ---
 
-## Setup Instructions
+# 🚀 Installation
 
-**1. Clone the repository**
+Clone the repository
+
 ```bash
-git clone https://github.com/qw3rty-dev/job-tracker-api
-cd job-tracker-api
+git clone https://github.com/qw3rty-dev/jobflow-api.git
+
+cd jobflow-api
 ```
 
-**2. Install dependencies**
+Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-**3. Setup environment variables**
+Create a `.env` file
 
-Create a `.env` file:
-```
-BOT_TOKEN=your_telegram_bot_token
-CHAT_ID=your_telegram_chat_id
+```bash
+cp .env.example .env
 ```
 
-**4. Run the application**
+Run database migrations
+
+```bash
+alembic upgrade head
+```
+
+Start the server
+
 ```bash
 uvicorn main:app --reload
 ```
 
----
+Open
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/jobs/` | Create a job manually |
-| `GET` | `/jobs/` | Get all stored jobs |
-| `POST` | `/jobs/scrape` | Trigger manual scraping |
-| `GET` | `/jobs/stats` | Get job statistics |
-| `GET` | `/jobs/{job_id}` | Get job by ID |
-| `DELETE` | `/jobs/{job_id}` | Delete job |
-| `PUT` | `/jobs/{job_id}` | Mark job as applied |
-
- Interactive docs available at: `/docs`
-
----
-
-## Swagger UI
-![Swagger UI](assets/swagger.png)
-
-## Example Response
-
-```json
-{
-  "id": 1,
-  "title": "Backend Developer",
-  "company": "Example Inc",
-  "location": "Remote",
-  "link": "https://remoteOK.com/remote-jobs/job/123",
-  "applied": false
-}
+```
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-## Stats Endpoint
+# 🔑 Environment Variables
 
-`GET /jobs/stats` returns:
+Create a `.env` file using `.env.example`.
 
-```json
-{
-  "total_jobs": 50,
-  "applied": 10,
-  "pending": 40
-}
-```
+Required variables:
 
----
-
-## Telegram Alerts
-
-- Sends one combined message per scrape
-- Includes only filtered jobs
-- Triggered only when new relevant jobs are found
-
-Format:
-```
-Title at Company
-Location: XYZ
-https://...
-```
+- APPLICATION_ID
+- APPLICATION_KEY
+- DATABASE_URL
+- SECRET_KEY
+- RESEND_API_KEY
+- FROM_EMAIL
 
 ---
 
-## Database Schema
+# 🔮 Future Improvements
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | Integer | Primary key (auto increment) |
-| `title` | Text | Job title |
-| `company` | Text | Company name |
-| `location` | Text | Job location |
-| `link` | Text | Unique job URL |
-| `applied` | Boolean | Application status |
+- Docker Support
+- Redis Caching
+- Background Queue (Celery/RQ)
+- OAuth Authentication
+- AI-powered Job Recommendations
+- Job Analytics Dashboard
 
 ---
 
-## Background Processing
+# 👨‍💻 Author
 
-- Runs using a threaded loop
-- Executes every 10 minutes
-- Automatically starts with the application
-- Can also be triggered manually via API
+**qw3rty-dev**
 
----
+Backend Developer
 
-## Notes
-
-- `.env` file is not included for security reasons
-- Database is created automatically on first run
-- Ensure your Telegram bot is active before running
-
----
-
-## Future Improvements
-
-- User-specific job preferences
-- Authentication system
-- Web dashboard (frontend)
-- Multi-user support
-- Advanced filtering logic
-
----
-
+GitHub:
+https://github.com/qw3rty-dev
