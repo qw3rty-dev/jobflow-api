@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 import jwt
 from fastapi import status
-from fastapi import HTTPException,Depends
+from fastapi import HTTPException,Depends,status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
@@ -45,10 +45,40 @@ def verify_access_token(token:str)-> int:
             [ALGORITHM]
         )
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401,detail= "Unauthorized")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "Invalid access token")
     sub = payload.get("sub")
     if not sub:
-        raise HTTPException(status_code=401,detail= "Unauthorized")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "Unauthorized")
+    user_id = int(sub)
+    return user_id
+
+def create_refresh_token(user_id:int)->str:
+
+    expire= datetime.now(UTC)+ timedelta(days=7)
+    payload = {
+        "sub": str(user_id),
+        "exp": expire
+    }
+
+    return jwt.encode(
+        payload,
+        SECRET_KEY,
+        ALGORITHM        
+    )
+
+def verify_refresh_token(token:str)-> int:
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            [ALGORITHM]
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "Invalid refresh token")
+    sub = payload.get("sub")
+    if not sub:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "Unauthorized")
     user_id = int(sub)
     return user_id
 
@@ -59,7 +89,7 @@ def get_current_user(token: str = Depends(oauth2_scheme),
     current_user_id = verify_access_token(token)
     current_user = db.scalar(select(User).where(User.id == current_user_id))
     if not current_user:
-       raise HTTPException(status_code= 401,detail="Invalid authentication credentials")
+       raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED,detail="Invalid authentication credentials")
     return current_user
 
 

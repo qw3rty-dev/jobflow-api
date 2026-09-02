@@ -31,7 +31,7 @@ The project focuses on building a modular backend architecture by separating rou
 - Secure password hashing
 
 ### Job Discovery
-- Multi-source scraping — **RemoteOK**, **Adzuna**, **Arbeitnow**, **Python.org Jobs**, **Greenhouse**
+- Multi-source scraping — **RemoteOK**, **Adzuna**, **Arbeitnow**, **Python.org Jobs**, **Greenhouse**, **HackerNews**
 - Search by title, company, location, source, or keyword
 - Sorting by any field (asc/desc)
 - Pagination with metadata (page, total, has_next, has_previous)
@@ -52,7 +52,7 @@ The project focuses on building a modular backend architecture by separating rou
 - Job notification digest
 
 ### Background Workers
-- **Scraper** — runs every 10 minutes, fetches from all 5 sources, deduplicates by link, refreshes `last_seen` on existing jobs
+- **Scraper** — runs every 10 minutes, fetches from all 6 sources, deduplicates by link, refreshes `last_seen` on existing jobs
 - **Notification worker** — runs every 2 hours, matches new jobs against user keywords, sends digest email, marks jobs as processed
 - **Cleanup** — runs daily, deletes expired unsaved jobs, marks expired saved jobs inactive, removes unverified accounts
 
@@ -232,6 +232,8 @@ The project focuses on building a modular backend architecture by separating rou
 |--------|----------|-------------|
 | `POST` | `/auth/register` | Register a new user |
 | `POST` | `/auth/login` | Login and get JWT token |
+| `POST` | `/auth/refresh` | Get new access token using refresh token |
+| `POST` | `/auth/logout` | Invalidate refresh token |
 | `PATCH` | `/auth/password_change` | Change password |
 | `POST` | `/auth/verify_email` | Send email verification OTP |
 | `POST` | `/auth/verify_email/confirm` | Confirm OTP and verify account |
@@ -334,6 +336,7 @@ Fill in your values:
 APPLICATION_ID=your_adzuna_application_id
 APPLICATION_KEY=your_adzuna_application_key
 DATABASE_URL=postgresql://username:password@localhost:5432/jobflow_db
+TEST_DATABASE_URL=postgresql://username:password@localhost:5432/test_jobflow_db
 SECRET_KEY=your_super_secret_key
 RESEND_API_KEY=re_your_resend_api_key
 FROM_EMAIL=noreply@yourdomain.com

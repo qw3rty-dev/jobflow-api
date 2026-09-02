@@ -7,6 +7,7 @@ from pathlib import Path
 
 import httpx
 
+from src.scraper.utils import is_valid_url
 from src.scraper.schemas import Job,ScraperResponse
 
 load_dotenv()
@@ -55,7 +56,7 @@ async def fetch_adzuna_jobs() ->ScraperResponse:
                     "sort_by": "date"
                 }
                 tasks.append(fetch_page(client,URL,params,country,keyword))
-
+        
         for i in range(0,len(tasks),BATCH_SIZE):
             batch = tasks[i:i+BATCH_SIZE]
             responses = await asyncio.gather(*batch,return_exceptions=True)    
@@ -71,7 +72,10 @@ async def fetch_adzuna_jobs() ->ScraperResponse:
                 for result in data["results"]:
 
                     job_url = result.get("redirect_url","N/A").strip().split("?")[0]
+
                     if not job_url or job_url in seen_links:
+                        continue
+                    if not is_valid_url(job_url):
                         continue
                     seen_links.add(job_url)
 

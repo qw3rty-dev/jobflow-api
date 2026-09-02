@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from datetime import datetime,UTC
+from urllib.parse import urlparse
 
 from src.scraper.schemas import Job
 
@@ -32,7 +33,6 @@ def last_clean_up():
         CONFIG_PATH = PROJECT_ROOT / "cleanup_state.json"
         with open(CONFIG_PATH, "r") as f:
             cleanup = json.load(f)
-        print("config", CONFIG_PATH)
         return datetime.fromisoformat(cleanup["last_cleanup_at"])
     except FileNotFoundError:
         return datetime.min.replace(tzinfo= UTC)
@@ -44,3 +44,11 @@ def save_last_cleanup():
     CONFIG_PATH = PROJECT_ROOT / "clean_up_state.json"
     with open(CONFIG_PATH, "w") as f:
        json.dump(cleanup,f,indent=4)   
+
+
+def is_valid_url(url):
+   try:
+      result = urlparse(url)
+      return all([result.scheme in ("http","https"),result.netloc])
+   except(TypeError,ValueError):
+      return False

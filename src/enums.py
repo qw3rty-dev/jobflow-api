@@ -36,5 +36,6 @@ class Source(str,Enum):
     greenhouse = "greenhouse"
     python_org = "python.org"
     remoteOK = "remoteOK"
+    hackernews= "hackernews"
 
 

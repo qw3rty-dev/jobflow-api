@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException,status
 
 from src.models import User
-from src.security.jwt_handler import create_access_token
+from src.security.jwt_handler import create_access_token,create_refresh_token,verify_refresh_token
 from src.security.password import verify_password,hash_password,verification_code_generate
 from src.services.email_service import send_verification_mail,send_password_reset_otp,send_welcome_mail
 
@@ -61,14 +61,38 @@ class AuthService:
             user.deleted_at = None
 
         user.last_login = datetime.now(UTC)
+        access_token = create_access_token(user.id)
+        refresh_token = create_refresh_token(user.id)
+        user.refresh_token = refresh_token
         db.commit()
-        token = create_access_token(user.id)
 
         return {
-                "access_token": token,
+                "access_token": access_token,
+                "refresh_token": refresh_token,
                 "token_type": "bearer"
                 }
 
+    def refresh(self,
+                refresh_token:str,
+                db:Session):
+        user_id = verify_refresh_token(refresh_token)
+        user = db.get(User, user_id)
+        if not user or user.refresh_token != refresh_token:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid refresh token")
+        new_access_token = create_access_token(user.id)
+        return {
+                "access_token": new_access_token,
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+                }
+            
+
+    def logout(self,
+               current_user:User,
+               db:Session):
+        current_user.refresh_token = None
+        db.commit()
+        return {"message": "Logged out successfully"}
 
     def change_password(self,
                         current_password: str,
@@ -175,6 +199,7 @@ class AuthService:
         
         current_user.is_deleted = True         
         current_user.deleted_at = datetime.now(UTC)    
+        current_user.refresh_token = None
         db.commit()
         return {"message": "Your account has been deactivated and will be permanently deleted after 30 days.You can restore it anytime before then by logging in with your email and password"}     
         

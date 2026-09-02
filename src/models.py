@@ -43,6 +43,7 @@ class User(Base):
     verification_expires_at: Mapped[datetime|None]= mapped_column(DateTime(timezone=True),nullable=True)
     is_deleted: Mapped[bool]= mapped_column(default=False)
     deleted_at: Mapped[datetime|None]= mapped_column(DateTime(timezone=True),nullable=True)
+    refresh_token:Mapped[str|None]= mapped_column(nullable=True)
     saved_jobs: Mapped[list["SavedJobs"]] = relationship(back_populates= "user")
     keywords: Mapped[list["Keywords"]] = relationship(back_populates= "user")
 

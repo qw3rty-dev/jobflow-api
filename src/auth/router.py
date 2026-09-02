@@ -5,11 +5,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.models import User
 from src.database import get_db
 from src.security.jwt_handler import get_current_user,get_current_verified_user
-from .schemas import UserCreate,UserResponse,TokenResponse,MessageResponse,ChangePassword,VerifyOTP,ForgotPassword,ResetPassword,DeleteAccountRequest
-
-
+from .schemas import UserCreate,UserResponse,TokenResponse,MessageResponse,ChangePassword,VerifyOTP,ForgotPassword,ResetPassword,DeleteAccountRequest,RefreshRequest
 
 from .service import AuthService
+
 
 router= APIRouter(prefix="/auth",tags=["Authentication"])
 auth_service = AuthService()
@@ -36,6 +35,19 @@ def login(formdata: OAuth2PasswordRequestForm = Depends(),
     return token_response
 
 
+@router.post("/refresh",response_model= TokenResponse,status_code=status.HTTP_200_OK)
+def refresh(data:RefreshRequest,
+          db: Session = Depends(get_db)):
+    
+    token_response = auth_service.refresh(data.refresh_token,db= db)
+
+    return token_response
+
+
+@router.post("/logout",response_model=MessageResponse,status_code=status.HTTP_200_OK)
+def logout(current_user:User=Depends(get_current_user),
+           db:Session=Depends(get_db)):
+    return auth_service.logout(current_user,db)
 
 
 

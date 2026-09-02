@@ -1,10 +1,10 @@
-from urllib.parse import urljoin
-
-from bs4 import BeautifulSoup
 import requests
-
-from src.scraper.schemas import ScraperResponse,Job
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 from datetime import datetime,timezone
+
+from src.scraper.utils import is_valid_url
+from src.scraper.schemas import ScraperResponse,Job
 
 
 def fetch_python_jobs() -> ScraperResponse:
@@ -29,7 +29,8 @@ def fetch_python_jobs() -> ScraperResponse:
                 job_url = urljoin(url,job_url)
             else:
                 continue
-            
+            if not is_valid_url(job_url):
+                continue
             if not job_url or job_url in seen_links:
                 continue
             sub_req = session.get(job_url) 

@@ -1,16 +1,10 @@
 from src.models import SavedJobs,Jobs
 
 
-def test_get_saved_jobs(client,test_user,db,auth_headers):
-    test_user.is_verified = True
-    db.commit()
-    
-    response = client.get("/user/",
-                          headers=auth_headers
-                          )
+def test_get_saved_jobs_no_auth(client):
+    response = client.get("/user/")
+    assert response.status_code == 401
 
-    assert response.status_code == 200
-    assert isinstance(response.json(),list)
 
 def test_get_saved_jobs_unverified(client,test_user,auth_headers):
 
@@ -20,10 +14,6 @@ def test_get_saved_jobs_unverified(client,test_user,auth_headers):
                           )
 
     assert response.status_code == 403
-
-def test_get_saved_jobs_no_auth(client):
-    response = client.get("/user/")
-    assert response.status_code == 401
 
 
 def test_get_saved_jobs_empty(client,test_user,db,auth_headers):

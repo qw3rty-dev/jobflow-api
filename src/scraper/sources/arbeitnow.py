@@ -2,6 +2,7 @@ from datetime import datetime,UTC
 
 import requests
 
+from src.scraper.utils import is_valid_url
 from src.scraper.schemas import ScraperResponse,Job
 
 def fetch_arbeitnow_jobs()-> ScraperResponse:
@@ -21,6 +22,8 @@ def fetch_arbeitnow_jobs()-> ScraperResponse:
         job_url = job.get("url","N/A").strip()
         if not job_url or job_url in seen_links:
             continue
+        if not is_valid_url(job_url):
+           continue
 
         seen_links.add(job_url)
         posted_tag= job.get("created_at")

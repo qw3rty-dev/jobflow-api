@@ -1,6 +1,8 @@
 import json
 import requests
 from pathlib import Path
+
+from src.scraper.utils import is_valid_url
 from src.scraper.schemas import ScraperResponse,Job
 
 
@@ -12,7 +14,6 @@ COMPANIES = config["greenhouse_companies"]
 
 
 def fetch_greenhouse_jobs():
-
     jobs= []
     seen_links= set()
     headers = {"User-Agent": "Mozilla/5.0" }
@@ -29,6 +30,8 @@ def fetch_greenhouse_jobs():
             job_url = job.get("absolute_url","N/A").strip()
             if not job_url or job_url in seen_links:
                 continue
+            if not is_valid_url(job_url):
+               continue
             seen_links.add(job_url)
 
             jobs.append(

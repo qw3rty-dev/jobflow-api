@@ -4,16 +4,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session,selectinload
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select,or_,func,cast,Date
-from fastapi import APIRouter,HTTPException,status
+from fastapi import HTTPException,status
 
 from src.models import Jobs,Keywords,SavedJobs,User
 from src.enums import Status,SavedJobsSort,SortOrder
 from .schemas import UpdateSavedJob,UserPreferencesUpdate
 from src.services.export_service import generate_pdf,generate_csv
 from src.services.recommendation_service import get_recommendations
-
-router= APIRouter(prefix="/user",tags=["Users"])
-
 
 
 class UserService:

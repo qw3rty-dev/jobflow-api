@@ -10,6 +10,7 @@ from .sources.remoteOK import fetch_remoteok_jobs
 from .sources.python_jobs import fetch_python_jobs
 from .sources.arbeitnow import fetch_arbeitnow_jobs
 from .sources.greenhouse import fetch_greenhouse_jobs
+from .sources.hackernews import fetch_hackernews_jobs
 from src.services.cleanup_service import cleanup_expired_job
 from src.services.job_insert_update import insert_or_update_jobs
 
@@ -24,12 +25,14 @@ async def scrap_all_sources():
     arbeitnow_jobs = fetch_arbeitnow_jobs()
     python_jobs = fetch_python_jobs()
     greenhouse_jobs = fetch_greenhouse_jobs()
+    hn_jobs= fetch_hackernews_jobs()
 
     jobs.extend(adzuna_jobs.jobs)
     jobs.extend(remoteOK_jobs.jobs)
     jobs.extend(arbeitnow_jobs.jobs)
     jobs.extend(python_jobs.jobs)
     jobs.extend(greenhouse_jobs.jobs)
+    jobs.extend(hn_jobs.jobs)
 
     return jobs
           
